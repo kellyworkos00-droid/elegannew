@@ -240,7 +240,7 @@ export default function InvoicesPage() {
                             viewBox="0 0 20 20"
                             fill="currentColor"
                           >
-                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 6 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
                           </svg>
                           Pay
                         </button>
@@ -356,7 +356,12 @@ export default function InvoicesPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   Payment Amount *
-                  <span className="text-xs text-gray-500">(Max: {formatCurrency(selectedInvoice.balanceAmount)})</span>
+                  {selectedInvoice.balanceAmount > 0 && (
+                    <span className="text-xs text-gray-500">(Max: {formatCurrency(selectedInvoice.balanceAmount)})</span>
+                  )}
+                  {selectedInvoice.balanceAmount === 0 && (
+                    <span className="text-xs text-amber-600">(Invoice fully paid - enter refund or adjustment amount)</span>
+                  )}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -366,11 +371,11 @@ export default function InvoicesPage() {
                     type="number"
                     step="0.01"
                     min="0.01"
-                    max={selectedInvoice.balanceAmount}
+                    max={selectedInvoice.balanceAmount > 0 ? selectedInvoice.balanceAmount : undefined}
                     value={paymentForm.amount}
                     onChange={(e) => {
                       const value = parseFloat(e.target.value) || 0;
-                      if (value > selectedInvoice.balanceAmount) {
+                      if (selectedInvoice.balanceAmount > 0 && value > selectedInvoice.balanceAmount) {
                         alert(`Payment amount cannot exceed balance due of ${formatCurrency(selectedInvoice.balanceAmount)}`);
                         setPaymentForm({ ...paymentForm, amount: selectedInvoice.balanceAmount.toString() });
                       } else {
