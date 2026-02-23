@@ -84,6 +84,7 @@ export function createError(
 export class ApiResponse {
   private request?: NextRequest;
   private requestId?: string;
+  private rateLimitInfo?: { limit: number; remaining: number; reset: Date };
 
   constructor(request?: NextRequest, requestId?: string) {
     this.request = request;
@@ -224,12 +225,12 @@ export class ApiResponse {
    * Add rate limit headers
    */
   withRateLimit(
-    _limit: number,
-    _remaining: number,
-    _reset: Date
+    limit: number,
+    remaining: number,
+    reset: Date
   ): ApiResponse {
-    // Store for use in response building
-    // This would typically be called before success/error
+    // Store rate limit info in headers
+    this.rateLimitInfo = { limit, remaining, reset };
     return this;
   }
 }

@@ -50,7 +50,6 @@ const recordPaymentSchema = z.object({
 });
 
 type RecordPaymentData = z.infer<typeof recordPaymentSchema>;
-type BulkPaymentData = z.infer<typeof bulkPaymentSchema>;
 
 const bulkPaymentSchema = z.object({
   payments: z.array(
@@ -82,7 +81,7 @@ export async function POST(request: NextRequest) {
       requestId,
     });
 
-    const { success, data, error } = await parseRequestBody<RecordPaymentData>(request, recordPaymentSchema);
+    const { success, data } = await parseRequestBody<RecordPaymentData>(request, recordPaymentSchema);
 
     if (!success || !data) {
       throw new ValidationError('Invalid payment data');

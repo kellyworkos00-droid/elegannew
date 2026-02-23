@@ -31,7 +31,7 @@ export async function parseRequestBody<T>(
       success: true,
       data: result.data as T,
     };
-  } catch (error) {
+  } catch {
     // Return undefined error to indicate parsing failure
     return {
       success: false,

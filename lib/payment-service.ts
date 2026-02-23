@@ -5,7 +5,7 @@
 
 import prisma from '@/lib/prisma';
 import Decimal from 'decimal.js';
-import { calculateInvoiceStatus, PaymentStatus, validatePaymentAmount } from '@/lib/payment-methods';
+import { calculateInvoiceStatus, validatePaymentAmount } from '@/lib/payment-methods';
 import type { TransactionClient } from '@/lib/types';
 
 /**
