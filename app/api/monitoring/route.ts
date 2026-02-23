@@ -7,6 +7,7 @@
 import { NextRequest } from 'next/server';
 import { requirePermission } from '@/lib/authorization';
 import { createApiResponse } from '@/lib/response';
+import { ValidationError, AuthorizationError } from '@/lib/errors';
 import {
   getApiMetrics,
   getQueryMetrics,
@@ -88,15 +89,13 @@ export async function GET(request: NextRequest) {
 
       default:
         return api.error(
-          { code: 'INVALID_TYPE', message: 'Invalid metrics type' },
-          400
+          new ValidationError('Invalid metrics type')
         );
     }
   } catch (error) {
     if (error instanceof Error && error.message.includes('Permission')) {
       return api.error(
-        { code: 'FORBIDDEN', message: 'Admin access required' },
-        403
+        new AuthorizationError('Admin access required')
       );
     }
     throw error;
@@ -130,8 +129,7 @@ export async function POST(request: NextRequest) {
 
       default:
         return api.error(
-          { code: 'INVALID_ACTION', message: 'Invalid action' },
-          400
+          new ValidationError('Invalid action')
         );
     }
   } catch (error) {
