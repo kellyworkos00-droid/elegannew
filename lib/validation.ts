@@ -32,20 +32,10 @@ export async function parseRequestBody<T>(
       data: result.data as T,
     };
   } catch (error) {
+    // Return undefined error to indicate parsing failure
     return {
       success: false,
-      error: {
-        success: false,
-        error: {
-          issues: [
-            {
-              code: 'custom',
-              message: error instanceof SyntaxError ? 'Invalid JSON' : 'Failed to parse body',
-              path: [],
-            },
-          ],
-        },
-      } as SafeParseError<unknown>,
+      error: undefined,
     };
   }
 }

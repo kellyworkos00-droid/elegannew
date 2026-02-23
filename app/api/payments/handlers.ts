@@ -49,6 +49,9 @@ const recordPaymentSchema = z.object({
   paymentGatewayId: z.string().optional(),
 });
 
+type RecordPaymentData = z.infer<typeof recordPaymentSchema>;
+type BulkPaymentData = z.infer<typeof bulkPaymentSchema>;
+
 const bulkPaymentSchema = z.object({
   payments: z.array(
     z.object({
@@ -79,15 +82,10 @@ export async function POST(request: NextRequest) {
       requestId,
     });
 
-    const { success, data, error } = await parseRequestBody(request, recordPaymentSchema);
+    const { success, data, error } = await parseRequestBody<RecordPaymentData>(request, recordPaymentSchema);
 
-    if (!success) {
-      await logValidation('Payment data validation failed', {
-        userId: user.userId,
-        requestId,
-        details: getValidationErrors(error!),
-      });
-      throw new ValidationError('Invalid payment data', getValidationErrors(error!));
+    if (!success || !data) {
+      throw new ValidationError('Invalid payment data');
     }
 
     // Security: Check for attack patterns in notes
@@ -145,7 +143,6 @@ export async function POST(request: NextRequest) {
           userId: user.userId,
           requestId,
           invoiceId: data.invoiceId,
-          invoiceStatus: invoice.status,
         });
         throw new ConflictError('Invoice is already fully paid');
       }
@@ -193,18 +190,12 @@ export async function POST(request: NextRequest) {
     // Audit log
     await createAuditLog({
       userId: user.userId,
-      action: 'RECORD_PAYMENT',
+      action: 'COLLECT_PAYMENT',
       entityType: 'Payment',
       entityId: result.paymentId,
       description: `Payment recorded: ${data.paymentMethod} - ${data.amount}`,
       ipAddress: getClientIp(request.headers),
       userAgent: getUserAgent(request.headers),
-      metadata: {
-        invoiceId: data.invoiceId,
-        customerId: data.customerId,
-        amount: data.amount,
-        method: data.paymentMethod,
-      },
     });
 
     // Track API metrics

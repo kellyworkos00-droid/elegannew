@@ -213,7 +213,7 @@ export class ErrorResponse {
         code: this.error.code,
         message: this.error.message,
         statusCode: this.error.statusCode,
-        ...(this.error.details && { details: this.error.details }),
+        ...(this.error.details && typeof this.error.details === 'object' ? { details: this.error.details } : {}),
       },
     };
   }
@@ -223,8 +223,9 @@ export class ErrorResponse {
       'Content-Type': 'application/json',
     };
 
-    if (this.error instanceof RateLimitError && this.error.details) {
-      headers['Retry-After'] = this.error.details.retryAfter?.toString() || '60';
+    if (this.error instanceof RateLimitError && this.error.details && typeof this.error.details === 'object') {
+      const details = this.error.details as { retryAfter?: number };
+      headers['Retry-After'] = details.retryAfter?.toString() || '60';
     }
 
     return headers;

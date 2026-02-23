@@ -480,13 +480,13 @@ export async function getCustomerPaymentSummary(customerId: string) {
     },
   });
 
-  const totalAmount = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
-  const totalPaid = invoices.reduce((sum, inv) => sum + inv.paidAmount, 0);
+  const totalAmount =invoices.reduce((sum: number, inv) => sum + inv.totalAmount, 0);
+  const totalPaid = invoices.reduce((sum: number, inv) => sum + inv.paidAmount, 0);
   const totalOutstanding = totalAmount - totalPaid;
 
-  const paidCount = invoices.filter((inv) => inv.status === 'PAID').length;
+  const paidCount = invoices.filter((inv: { status: string }) => inv.status === 'PAID').length;
   const unpaidCount = invoices.filter(
-    (inv) => inv.status !== 'PAID' && inv.status !== 'CANCELLED'
+    (inv: { status: string }) => inv.status !== 'PAID' && inv.status !== 'CANCELLED'
   ).length;
 
   return {

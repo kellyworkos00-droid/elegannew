@@ -69,7 +69,7 @@ export function createError(
       code: error.code,
       message: error.message,
       statusCode: error.statusCode,
-      ...(error.details && { details: error.details }),
+      ...(error.details && typeof error.details === 'object' ? { details: error.details } : {}),
     },
     meta: {
       timestamp: new Date().toISOString(),
