@@ -229,23 +229,21 @@ export default function InvoicesPage() {
                     </td>
                     <td>
                       <div className="flex items-center gap-2">
-                        {invoice.balanceAmount > 0 && (
-                          <button
-                            onClick={() => openPaymentModal(invoice)}
-                            className="text-green-600 hover:text-green-700 font-medium text-sm"
-                            title="Record Payment"
+                        <button
+                          onClick={() => openPaymentModal(invoice)}
+                          className="text-green-600 hover:text-green-700 font-medium text-sm"
+                          title="Record Payment"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 inline mr-1"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 inline mr-1"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
-                            </svg>
-                            Pay
-                          </button>
-                        )}
+                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 6 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                          </svg>
+                          Pay
+                        </button>
                         <a
                           href={`/dashboard/invoices/print/${invoice.id}`}
                           target="_blank"
