@@ -4,8 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { applySecurityHeaders, addRateLimitHeaders, disableCaching } from '@/lib/headers';
-import { AppError, ErrorResponse } from '@/lib/errors';
+import { applySecurityHeaders, disableCaching } from '@/lib/headers';
+import { AppError } from '@/lib/errors';
 
 /**
  * Standard success response format
@@ -224,9 +224,9 @@ export class ApiResponse {
    * Add rate limit headers
    */
   withRateLimit(
-    limit: number,
-    remaining: number,
-    reset: Date
+    _limit: number,
+    _remaining: number,
+    _reset: Date
   ): ApiResponse {
     // Store for use in response building
     // This would typically be called before success/error

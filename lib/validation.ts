@@ -3,7 +3,7 @@
  * Type-safe validation with comprehensive error handling
  */
 
-import { z, ZodSchema, SafeParseError, SafeParseSuccess } from 'zod';
+import { z, ZodSchema, SafeParseError } from 'zod';
 
 /**
  * Parse and validate request body

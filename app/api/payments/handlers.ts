@@ -3,7 +3,7 @@
  * Record payments with multiple methods
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { requirePermission } from '@/lib/authorization';
 import { createAuditLog, getClientIp, getUserAgent } from '@/lib/audit';
 import { createApiResponse } from '@/lib/response';
@@ -12,7 +12,7 @@ import { recordPayment, recordBulkPayments, recordRefund, getPaymentHistory } fr
 import { sanitizeHtml, checkForAttackPatterns } from '@/lib/security';
 import { validatePaymentAmount, PaymentMethod, PAYMENT_METHOD_INFO } from '@/lib/payment-methods';
 import { parseRequestBody, getValidationErrors } from '@/lib/validation';
-import { logPayment, logValidation, logSecurity, LogLevel, trackApiCall, createPerformanceReport } from '@/lib/logging';
+import { logPayment, logValidation, logSecurity, LogLevel, trackApiCall } from '@/lib/logging';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { v4 as uuidv4 } from 'uuid';
@@ -237,7 +237,6 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   const api = createApiResponse(request);
-  const requestId = uuidv4();
   const startTime = Date.now();
 
   try {

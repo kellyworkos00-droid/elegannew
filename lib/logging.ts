@@ -32,7 +32,7 @@ interface LogEntry {
   message: string;
   userId?: string;
   requestId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   error?: {
     name: string;
     message: string;
@@ -82,7 +82,7 @@ export async function log(
   options: {
     userId?: string;
     requestId?: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     error?: Error;
     duration?: number;
   } = {}
@@ -222,7 +222,7 @@ export async function logSecurity(
     requestId?: string;
     ipAddress?: string;
     endpoint?: string;
-    details?: Record<string, any>;
+    details?: Record<string, unknown>;
     error?: Error;
   } = {}
 ): Promise<void> {
@@ -248,7 +248,7 @@ export async function logValidation(
     userId?: string;
     requestId?: string;
     field?: string;
-    value?: any;
+    value?: unknown;
     rule?: string;
     error?: Error;
   } = {}
@@ -454,7 +454,7 @@ export function createPerformanceReport() {
   };
 }
 
-export default {
+const loggingService = {
   log,
   logPayment,
   logInvoice,
@@ -471,3 +471,5 @@ export default {
   exportLogs,
   createPerformanceReport,
 };
+
+export default loggingService;

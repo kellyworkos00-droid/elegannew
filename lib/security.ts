@@ -222,14 +222,8 @@ export function generateSecureRandom(length: number = 32): string {
   let result = '';
   const randomValues = new Uint8Array(length);
   
-  if (typeof window === 'undefined') {
-    // Server-side: use Node.js crypto
-    const crypto = require('crypto');
-    crypto.getRandomValues(randomValues);
-  } else {
-    // Client-side: use browser crypto
-    crypto.getRandomValues(randomValues);
-  }
+  // Use Web Crypto API (available in both Node.js and browsers)
+  crypto.getRandomValues(randomValues);
   
   for (let i = 0; i < length; i++) {
     result += chars[randomValues[i] % chars.length];

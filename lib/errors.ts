@@ -318,9 +318,9 @@ export class ErrorLogger {
  * Async error wrapper for route handlers
  */
 export function asyncHandler(
-  fn: (req: any, res: any) => Promise<any>
+  fn: (req: Request, res: Response) => Promise<Response>
 ) {
-  return (req: any, res: any) => {
+  return (req: Request, res: Response) => {
     Promise.resolve(fn(req, res)).catch((error) => {
       ErrorLogger.log(error, {
         action: `${req.method} ${req.url}`,

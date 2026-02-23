@@ -160,7 +160,7 @@ export async function recordPayment(
           invoice.status
         );
 
-        const updatedInvoice = await tx.invoice.update({
+        await tx.invoice.update({
           where: { id: options.invoiceId },
           data: {
             paidAmount: newPaidAmount.toNumber(),
