@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import type { Notification, NotificationPreference, Prisma } from '@prisma/client';
+import type { Notification, NotificationPreference } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { sendEmail } from '@/lib/email-service';
 import { broadcastNotification } from '@/lib/websocket-manager';
 

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import type { AlertInstance, AlertRule, Prisma } from '@prisma/client';
+import type { AlertInstance, AlertRule } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { createNotification, NotificationType, NotificationSeverity } from '@/lib/notification-service';
 import { broadcastAlert } from '@/lib/websocket-manager';
 
