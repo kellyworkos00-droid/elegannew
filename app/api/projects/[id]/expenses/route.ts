@@ -28,7 +28,7 @@ export async function GET(
 
     const expenses = await prisma.projectExpense.findMany({
       where: { projectId: params.id },
-      orderBy: { expenseDate: 'desc' },
+      orderBy: { date: 'desc' },
       include: {
         createdByUser: {
           select: {
