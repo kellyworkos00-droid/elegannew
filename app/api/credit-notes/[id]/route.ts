@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { updateCreditNoteSchema } from '@/lib/validations';
 import { verifyAuth } from '@/lib/auth';
+import { createAuditLog } from '@/lib/audit';
 
 // GET /api/credit-notes/[id] - Get credit note details
 export async function GET(
@@ -261,8 +262,8 @@ export async function PATCH(
     }
 
     // Audit log
-    await logAudit({
-      userId: user.id,
+    await createAuditLog({
+      userId: user.userId,
       action: 'UPDATE',
       entity: 'CREDIT_NOTE',
       entityId: params.id,
