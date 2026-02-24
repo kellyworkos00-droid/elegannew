@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, X, FileText, Send, CheckCircle, XCircle, Clock, Calendar } from 'lucide-react';
+import { Plus, X, FileText, Send, CheckCircle, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface Customer {

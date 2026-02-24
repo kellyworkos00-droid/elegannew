@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Users, DollarSign, Calendar, TrendingUp, Plus, X, Check, FileText, UserPlus, Building2 } from 'lucide-react';
+import { Users, DollarSign, Calendar, Plus, X, Check, Building2 } from 'lucide-react';
 
 interface Employee {
   id: string;
@@ -57,8 +57,6 @@ export default function HRPage() {
   // Modals
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [showDepartmentModal, setShowDepartmentModal] = useState(false);
-  const [showPayrollModal, setShowPayrollModal] = useState(false);
-  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   // Form data
   const [newEmployee, setNewEmployee] = useState({
@@ -80,13 +78,6 @@ export default function HRPage() {
     description: '',
   });
 
-  const [newLeave, setNewLeave] = useState({
-    employeeId: '',
-    leaveType: 'ANNUAL',
-    startDate: '',
-    endDate: '',
-    reason: '',
-  });
 
   const fetchData = useCallback(async () => {
     try {

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { requirePermission } from '@/lib/authorization';
-import { createAuditLog, getClientIp, getUserAgent } from '@/lib/audit';
 import { createErrorResponse, createSuccessResponse } from '@/lib/utils';
 
 // GET /api/stock/movements - List all stock movements with filters

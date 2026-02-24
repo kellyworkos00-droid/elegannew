@@ -2,7 +2,6 @@ import { Workbook, Worksheet } from 'exceljs';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { AgingReport, CashFlowData, FinancialRatio, DashboardMetrics } from '@/lib/analytics-service';
-import { Decimal } from 'decimal.js';
 
 type AutoTableDrawData = {
   pageNumber: number;
@@ -33,8 +32,7 @@ function getAutoTable(doc: jsPDF): (options: AutoTableOptions) => void {
  * Export aging report to Excel
  */
 export async function exportAgingReportToExcel(
-  agingReport: AgingReport,
-  fileName: string = 'aging-report.xlsx'
+  agingReport: AgingReport
 ): Promise<Buffer> {
   try {
     const workbook = new Workbook();
@@ -110,8 +108,7 @@ export async function exportAgingReportToExcel(
  * Export cash flow data to Excel
  */
 export async function exportCashFlowToExcel(
-  data: CashFlowData[],
-  fileName: string = 'cash-flow.xlsx'
+  data: CashFlowData[]
 ): Promise<Buffer> {
   try {
     const workbook = new Workbook();
@@ -178,8 +175,7 @@ export async function exportCashFlowToExcel(
  * Export dashboard metrics to Excel
  */
 export async function exportDashboardToExcel(
-  metrics: DashboardMetrics,
-  fileName: string = 'dashboard-metrics.xlsx'
+  metrics: DashboardMetrics
 ): Promise<Buffer> {
   try {
     const workbook = new Workbook();
@@ -279,8 +275,7 @@ function createRatiosSheet(worksheet: Worksheet, ratio: FinancialRatio) {
  * Export aging report to PDF
  */
 export async function exportAgingReportToPDF(
-  agingReport: AgingReport,
-  fileName: string = 'aging-report.pdf'
+  agingReport: AgingReport
 ): Promise<Buffer> {
   try {
     const doc = new jsPDF();
@@ -338,8 +333,7 @@ export async function exportAgingReportToPDF(
  * Export cash flow to PDF
  */
 export async function exportCashFlowToPDF(
-  data: CashFlowData[],
-  fileName: string = 'cash-flow.pdf'
+  data: CashFlowData[]
 ): Promise<Buffer> {
   try {
     const doc = new jsPDF();
@@ -391,8 +385,7 @@ export async function exportCashFlowToPDF(
  * Export dashboard metrics to PDF
  */
 export async function exportDashboardToPDF(
-  metrics: DashboardMetrics,
-  fileName: string = 'dashboard-metrics.pdf'
+  metrics: DashboardMetrics
 ): Promise<Buffer> {
   try {
     const doc = new jsPDF();

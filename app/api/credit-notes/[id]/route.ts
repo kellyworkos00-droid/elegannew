@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { verifyAuth } from '@/lib/auth';
 import { updateCreditNoteSchema } from '@/lib/validations';
-import { createAuditLog } from '@/lib/audit';
 
 // GET /api/credit-notes/[id] - Get credit note details
 export async function GET(

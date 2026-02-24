@@ -48,7 +48,6 @@ export interface EmailOptions {
  */
 function generateEmailTemplate(options: EmailOptions): string {
   const {
-    type,
     notificationTitle,
     notificationMessage,
     actionUrl,

@@ -244,12 +244,11 @@ async function getCurrentCashBalance(): Promise<Decimal> {
 export async function calculateFinancialRatios(): Promise<FinancialRatio> {
   try {
     // Fetch financial data
-    const [assets, liabilities, equity, revenue, expenses, netIncome] = await Promise.all([
+    const [assets, liabilities, equity, revenue, netIncome] = await Promise.all([
       getTotalAssets(),
       getTotalLiabilities(),
       getTotalEquity(),
       getTotalRevenue(),
-      getTotalExpenses(),
       getNetIncome(),
     ]);
 

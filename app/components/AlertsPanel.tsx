@@ -23,11 +23,9 @@ interface AlertsPanelProps {
 
 export function AlertsPanel({ maxVisible = 3 }: AlertsPanelProps) {
   const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const fetchAlerts = useCallback(async () => {
-    setLoading(true);
     try {
       const response = await fetch('/api/alerts?take=10');
       if (response.ok) {
@@ -37,7 +35,7 @@ export function AlertsPanel({ maxVisible = 3 }: AlertsPanelProps) {
     } catch (error) {
       console.error('Error fetching alerts:', error);
     } finally {
-      setLoading(false);
+      // no-op
     }
   }, []);
 

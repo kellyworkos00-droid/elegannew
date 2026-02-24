@@ -7,7 +7,7 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requirePermission } from '@/lib/authorization';
 import { createApiResponse } from '@/lib/response';
-import { ValidationError, NotFoundError } from '@/lib/errors';
+import { ValidationError } from '@/lib/errors';
 import { z } from 'zod';
 import { createAuditLog, getClientIp, getUserAgent } from '@/lib/audit';
 

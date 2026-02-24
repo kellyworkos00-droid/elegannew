@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Plus, X, FileText, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Plus, X, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface Customer {

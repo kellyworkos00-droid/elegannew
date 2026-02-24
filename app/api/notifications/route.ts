@@ -5,7 +5,6 @@ import {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
-  getUnreadNotificationCount,
 } from '@/lib/notification-service';
 import { errorResponse, successResponse } from '@/lib/response';
 
