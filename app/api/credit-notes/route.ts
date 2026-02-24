@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { verifyAuth } from '@/lib/auth';
 import { createCreditNoteSchema } from '@/lib/validations';
 import { createAuditLog } from '@/lib/audit';
+import { z } from 'zod';
 
 // GET /api/credit-notes - List credit notes with filters
 export async function GET(request: NextRequest) {
