@@ -58,6 +58,7 @@ export async function GET(
         milestones: {
           orderBy: { dueDate: 'asc' },
         },
+
         expenses: {
           orderBy: { date: 'desc' },
         },
