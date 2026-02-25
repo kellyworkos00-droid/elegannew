@@ -66,11 +66,10 @@ export async function POST(
     const milestone = await prisma.projectMilestone.create({
       data: {
         projectId: params.id,
-        name: parsed.data.name,
+        title: parsed.data.name,
         description: parsed.data.description,
         dueDate: parsed.data.dueDate ? new Date(parsed.data.dueDate) : null,
         status: parsed.data.status || 'PENDING',
-        amount: parsed.data.amount || 0,
       },
     });
 
