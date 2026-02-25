@@ -159,6 +159,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
+  // Skip dashboard layout UI for print routes  
+  if (pathname?.includes('/print/')) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-transparent">
       {/* Mobile sidebar backdrop */}
