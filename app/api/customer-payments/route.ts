@@ -127,23 +127,30 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+      // Fallback error
+      return NextResponse.json(
+        createErrorResponse('Payment processing failed', 'INTERNAL_ERROR'),
+        { status: 500 }
+      );
     }
 
-    // Record audit log
-    await createAuditLog({
-      userId: user.userId,
-      action: 'RECORD_SUPPLIER_PAYMENT',
-      entityType: 'Payment',
-      entityId: result.payment.id,
-      description: `Customer payment recorded: ${result.payment.paymentNumber}`,
-      ipAddress: getClientIp(request.headers),
-      userAgent: getUserAgent(request.headers),
-      metadata: {
-        invoiceId,
-        paymentNumber: result.payment.paymentNumber,
-        amount: paymentAmount.toNumber(),
-      },
-    });
+    // Record audit log for successful payment
+    if (!('error' in result) && result.payment) {
+      await createAuditLog({
+        userId: user.userId,
+        action: 'RECORD_SUPPLIER_PAYMENT',
+        entityType: 'Payment',
+        entityId: result.payment.id,
+        description: `Customer payment recorded: ${result.payment.paymentNumber || result.payment.id}`,
+        ipAddress: getClientIp(request.headers),
+        userAgent: getUserAgent(request.headers),
+        metadata: {
+          invoiceId,
+          paymentNumber: result.payment.paymentNumber,
+          amount: paymentAmount.toNumber(),
+        },
+      });
+    }
 
     return NextResponse.json(
       createSuccessResponse(

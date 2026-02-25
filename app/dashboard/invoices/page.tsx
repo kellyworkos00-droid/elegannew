@@ -122,7 +122,8 @@ export default function InvoicesPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        alert(`Error: ${error.message}`);
+        const errorMessage = error?.error?.message || error?.message || 'Payment recording failed';
+        alert(`Error: ${errorMessage}`);
         return;
       }
 
