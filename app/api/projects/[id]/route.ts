@@ -59,7 +59,7 @@ export async function GET(
           orderBy: { dueDate: 'asc' },
         },
         expenses: {
-          orderBy: { expenseDate: 'desc' },
+          orderBy: { date: 'desc' },
           include: {
             createdByUser: {
               select: {
