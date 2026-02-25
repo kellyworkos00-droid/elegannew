@@ -155,38 +155,44 @@ export default function InvoicePrintPage() {
 
       {/* Invoice Document - Single A4 Page */}
       <div className="min-h-screen bg-gray-50 print:bg-white py-4 print:py-0 px-4 print:px-0">
-        <div className="invoice-print-container max-w-4xl mx-auto bg-white shadow-lg print:shadow-none p-6 print:p-6 print:m-0" style={{ minHeight: 'auto' }}>
+        <div className="invoice-print-container max-w-4xl mx-auto bg-white shadow-lg print:shadow-none p-6 print:p-8 print:m-0" style={{ minHeight: 'auto' }}>
           {/* Professional Header */}
-          <div className="border-b-4 border-blue-600 pb-3 mb-3">
-            <div className="grid grid-cols-3 gap-4 items-start mb-2">
+          <div className="border-b-4 border-blue-600 pb-4 mb-4">
+            <div className="grid grid-cols-3 gap-4 items-start mb-3">
               {/* Left: Company Logo & Name */}
-              <div className="flex items-center gap-2">
-                <div className="relative w-10 h-10 flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="relative w-12 h-12 flex-shrink-0">
                   <Image src="/images/elegant-logo.jpg" alt="Elegant Steel Logo" fill className="object-contain" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-blue-900">ELEGANT STEEL</h1>
-                  <p className="text-xs text-gray-600 leading-none">EASTERN BYPASS</p>
+                  <h1 className="text-xl font-bold text-blue-900">ELEGANT STEEL</h1>
+                  <p className="text-xs text-gray-600">EASTERN BYPASS</p>
                 </div>
               </div>
               {/* Center: INVOICE Title */}
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-900">INVOICE</h2>
-                <p className="text-xs font-semibold text-blue-600">{invoice.invoiceNumber}</p>
+                <h2 className="text-3xl font-bold text-gray-900">INVOICE</h2>
+                <p className="text-sm font-semibold text-blue-600 mt-1">{invoice.invoiceNumber}</p>
               </div>
               {/* Right: Tax & Contact Info */}
-              <div className="text-right text-xs space-y-0.5">
-                <p><span className="font-semibold">KRA PIN:</span> P000000000A</p>
-                <p className="text-gray-600 font-medium">Phone: 0726788925 / 0111478454</p>
-                <p className="text-gray-600 font-medium">Eastern Bypass, Nairobi</p>
+              <div className="text-right text-xs space-y-1">
+                <p className="font-semibold">KRA PIN: <span className="text-blue-600">P000000000A</span></p>
+                <p className="text-gray-700">📞 0726788925 / 0111478454</p>
+                <p className="text-gray-700">📍 Eastern Bypass, Nairobi</p>
               </div>
             </div>
             {/* Dates */}
-            <div className="grid grid-cols-3 gap-4 text-xs pt-2 border-t border-gray-200">
-              <div><p className="text-gray-600 font-medium">Issued:</p><p className="font-semibold">{formatDate(invoice.issueDate)}</p></div>
-              <div className="text-center"><p className="text-gray-600 font-medium">Due:</p><p className="font-semibold">{formatDate(invoice.dueDate)}</p></div>
+            <div className="grid grid-cols-3 gap-4 text-sm pt-3 border-t border-gray-200">
+              <div>
+                <p className="text-gray-600 font-semibold text-xs uppercase">Issued</p>
+                <p className="font-bold text-gray-900">{formatDate(invoice.issueDate)}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-gray-600 font-semibold text-xs uppercase">Due</p>
+                <p className="font-bold text-gray-900">{formatDate(invoice.dueDate)}</p>
+              </div>
               <div className="text-right">
-                <p className={`text-xs font-bold uppercase px-2 py-0.5 rounded inline-block ${invoice.status === 'PAID' ? 'bg-green-100 text-green-700' : invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-700' : invoice.status === 'PARTIALLY_PAID' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
+                <p className={`text-xs font-bold uppercase px-3 py-1 rounded inline-block ${invoice.status === 'PAID' ? 'bg-green-100 text-green-700' : invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-700' : invoice.status === 'PARTIALLY_PAID' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
                   {invoice.status.replace(/_/g, ' ')}
                 </p>
               </div>
@@ -194,46 +200,46 @@ export default function InvoicePrintPage() {
           </div>
 
           {/* Customer & Items Section */}
-          <div className="grid grid-cols-3 gap-3 mb-2 text-xs">
+          <div className="grid grid-cols-3 gap-3 mb-4 text-sm">
             {/* Bill To */}
             <div>
-              <p className="font-bold text-gray-900 uppercase text-xs mb-1">Bill To</p>
-              <p className="font-semibold text-gray-900 leading-snug">{invoice.customer.name}</p>
-              {invoice.customer.billingAddress && <p className="text-gray-600 text-xs leading-snug">{invoice.customer.billingAddress}</p>}
+              <p className="font-bold text-gray-900 uppercase text-xs mb-2">Bill To</p>
+              <p className="font-semibold text-gray-900">{invoice.customer.name}</p>
+              {invoice.customer.billingAddress && <p className="text-gray-600 text-xs">{invoice.customer.billingAddress}</p>}
               {invoice.customer.phone && <p className="text-gray-600 text-xs">Tel: {invoice.customer.phone}</p>}
             </div>
             {/* Items Count */}
-            <div className="bg-blue-50 p-2 rounded text-center">
-              <p className="font-bold text-gray-900 text-base">{lineItems.length}</p>
-              <p className="text-gray-600 text-xs">Items</p>
+            <div className="bg-blue-50 p-3 rounded text-center border-2 border-blue-200">
+              <p className="font-bold text-gray-900 text-lg">{lineItems.length}</p>
+              <p className="text-gray-600 text-xs font-semibold">Line Items</p>
             </div>
             {/* Tax Info */}
-            <div className="bg-amber-50 p-2 rounded text-right">
+            <div className="bg-amber-50 p-3 rounded text-right border-2 border-amber-200">
               <p className="text-xs text-gray-600 font-semibold">VAT Rate</p>
-              <p className="font-bold text-amber-700">16%</p>
-              <p className="text-xs text-gray-600">Included</p>
+              <p className="font-bold text-amber-700 text-lg">16%</p>
+              <p className="text-xs text-gray-600">Included in Total</p>
             </div>
           </div>
 
           {/* Line Items Table */}
           {lineItems.length > 0 && (
-            <div className="mb-2 max-h-72 overflow-y-auto">
-              <table className="w-full text-xs border-collapse">
-                <thead className="sticky top-0">
+            <div className="mb-4">
+              <table className="w-full text-sm border-collapse">
+                <thead>
                   <tr className="bg-blue-100 border-b-2 border-blue-600">
-                    <th className="text-left py-1.5 px-2 font-bold text-gray-900">Description</th>
-                    <th className="text-center py-1.5 px-1 font-bold text-gray-900 w-10">Qty</th>
-                    <th className="text-right py-1.5 px-2 font-bold text-gray-900 w-20">Unit Price</th>
-                    <th className="text-right py-1.5 px-2 font-bold text-gray-900 w-20">Total</th>
+                    <th className="text-left py-2 px-3 font-bold text-gray-900">Description</th>
+                    <th className="text-center py-2 px-2 font-bold text-gray-900 w-16">Qty</th>
+                    <th className="text-right py-2 px-3 font-bold text-gray-900 w-24">Unit Price</th>
+                    <th className="text-right py-2 px-3 font-bold text-gray-900 w-24">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {lineItems.map((item, index) => (
-                    <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                      <td className="py-1 px-2 text-gray-900">{item.description}</td>
-                      <td className="py-1 px-1 text-center text-gray-900 font-medium">{item.quantity}</td>
-                      <td className="py-1 px-2 text-right text-gray-900">{formatCurrency(item.unitPrice)}</td>
-                      <td className="py-1 px-2 text-right text-gray-900 font-semibold">{formatCurrency(item.total)}</td>
+                    <tr key={index} className="border-b border-gray-200">
+                      <td className="py-2 px-3 text-gray-900">{item.description}</td>
+                      <td className="py-2 px-2 text-center text-gray-900 font-medium">{item.quantity}</td>
+                      <td className="py-2 px-3 text-right text-gray-900">{formatCurrency(item.unitPrice)}</td>
+                      <td className="py-2 px-3 text-right text-gray-900 font-semibold">{formatCurrency(item.total)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -242,29 +248,29 @@ export default function InvoicePrintPage() {
           )}
 
           {/* Totals Section */}
-          <div className="border-t-2 border-gray-300 pt-2">
-            <div className="flex justify-end ">
-              <div className="w-64">
-                <div className="flex justify-between text-xs py-1">
-                  <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-semibold">{formatCurrency(invoice.subtotal)}</span>
+          <div className="border-t-2 border-gray-300 pt-3">
+            <div className="flex justify-end">
+              <div className="w-72">
+                <div className="flex justify-between text-sm py-1.5">
+                  <span className="text-gray-700 font-semibold">Subtotal:</span>
+                  <span className="font-semibold text-gray-900">{formatCurrency(invoice.subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-xs py-1 border-b-2 border-gray-300">
-                  <span className="text-gray-600">VAT @ 16%:</span>
+                <div className="flex justify-between text-sm py-1.5 border-b-2 border-gray-300">
+                  <span className="text-gray-700 font-semibold">VAT @ 16%:</span>
                   <span className="font-semibold text-amber-700">{formatCurrency(invoice.taxAmount)}</span>
                 </div>
-                <div className="flex justify-between text-sm py-1.5 font-bold bg-gradient-to-r from-blue-50 to-blue-100 px-2 rounded">
-                  <span className="text-gray-900">TOTAL:</span>
+                <div className="flex justify-between text-lg py-2 font-bold bg-gradient-to-r from-blue-50 to-blue-100 px-3 rounded my-2">
+                  <span className="text-gray-900">TOTAL DUE:</span>
                   <span className="text-blue-900">{formatCurrency(invoice.totalAmount)}</span>
                 </div>
                 {invoice.paidAmount > 0 && (
                   <>
-                    <div className="flex justify-between text-xs py-1 mt-1 text-green-700">
-                      <span>Paid:</span>
-                      <span className="font-semibold">{formatCurrency(invoice.paidAmount)}</span>
+                    <div className="flex justify-between text-sm py-1.5 text-green-700 font-semibold">
+                      <span>Amount Paid:</span>
+                      <span>{formatCurrency(invoice.paidAmount)}</span>
                     </div>
                     {invoice.balanceAmount > 0 && (
-                      <div className="flex justify-between text-xs py-1 bg-orange-50 px-2 rounded text-orange-700 font-bold">
+                      <div className="flex justify-between text-sm py-1.5 bg-orange-50 px-3 rounded text-orange-800 font-bold">
                         <span>Balance Due:</span>
                         <span>{formatCurrency(invoice.balanceAmount)}</span>
                       </div>
@@ -277,13 +283,13 @@ export default function InvoicePrintPage() {
 
           {/* Payment History */}
           {invoice.payments.length > 0 && (
-            <div className="mt-2 text-xs">
-              <p className="font-bold text-gray-900 uppercase mb-1">Payment History</p>
-              <div className="space-y-0.5">
+            <div className="mt-4 text-xs">
+              <p className="font-bold text-gray-900 uppercase mb-2 border-b-2 border-gray-300 pb-1">Payment History</p>
+              <div className="space-y-1">
                 {invoice.payments.map((payment) => (
-                  <div key={payment.id} className="flex justify-between bg-gray-50 p-1 px-2 rounded">
-                    <span className="text-gray-600">{formatDate(payment.paymentDate)} - {payment.paymentMethod}</span>
-                    <span className="font-semibold text-green-700">{formatCurrency(payment.amount)}</span>
+                  <div key={payment.id} className="flex justify-between bg-gray-50 p-2 px-3 rounded border-l-4 border-green-500">
+                    <span className="text-gray-700 font-medium">{formatDate(payment.paymentDate)} - {payment.paymentMethod}</span>
+                    <span className="font-bold text-green-700">{formatCurrency(payment.amount)}</span>
                   </div>
                 ))}
               </div>
@@ -291,60 +297,66 @@ export default function InvoicePrintPage() {
           )}
 
           {/* Footer */}
-          <div className="border-t border-gray-300 pt-2 mt-2 text-center text-xs text-gray-600">
-            <p className="font-semibold text-gray-900 mb-0.5">Thank you for your business!</p>
-            <p className="text-gray-500 text-xs leading-tight">VAT is included in all prices. This is a computer-generated document and is valid without a signature.</p>
-            <p className="text-gray-400 text-xs mt-0.5">Elegant Steel | Eastern Bypass | PIN: 0726788925</p>
+          <div className="border-t-2 border-gray-300 pt-3 mt-4 text-center text-xs text-gray-600">
+            <p className="font-bold text-gray-900 mb-1 text-sm">Thank you for your business!</p>
+            <p className="text-gray-600 leading-relaxed">VAT is included in all prices above. This is a computer-generated document and requires no signature for validity.</p>
+            <p className="text-gray-500 mt-2 font-semibold">Elegant Steel | Eastern Bypass | KRA PIN: P000000000A</p>
+            <p className="text-gray-400 mt-1 text-xs">Printed on {formatDate(new Date().toISOString())}</p>
           </div>
         </div>
       </div>
 
       <style jsx global>{`
         @media print {
-          * { margin: 0; padding: 0; }
+          * { 
+            margin: 0; 
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          
           html, body { 
             margin: 0; 
-            padding: 0!important; 
+            padding: 0 !important; 
             width: 100%; 
-            height: 100%;
             background: white !important;
           }
+          
           @page { 
             size: A4;
             margin: 0;
           }
           
-          /* Hide print button and outer containers when printing */
-          div[class*="print:hidden"] { display: none !important; }
+          /* Hide print button when printing */
+          div:has(> button) { display: none !important; }
+          button { display: none !important; }
           
-          /* Show only invoice container */
+          /* Show invoice container */
           .invoice-print-container {
-            display: block !important;
-            margin: 0 !important;
-            padding: 1cm !important;
-            width: 210mm !important;
-            height: 297mm !important;
             box-shadow: none !important;
             border-radius: 0 !important;
             page-break-inside: avoid !important;
             page-break-after: avoid !important;
-            page-break-before: avoid !important;
-            overflow: hidden !important;
             background: white !important;
+            margin: 0 !important;
+            padding: 0.5cm !important;
+            max-width: none !important;
           }
           
-          /* Ensure no overflow */
-          body > * { display: none !important; }
-          .invoice-print-container { display: block !important; }
+          /* Ensure text and colors are visible */
+          p, span, div, td, th { 
+            color: inherit !important;
+          }
           
-          /* Prevent page breaks inside invoice */
-          table, tr, td, th, div, p, span { page-break-inside: avoid !important; }
+          /* Keep backgrounds and colors */
+          div[class*="bg-"] {
+            background: inherit !important;
+          }
           
-          /* Force proper colors */
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-          
-          /* Ensure single page */
-          body { height: 297mm; overflow: hidden; }
+          /* Prevent unnecessary page breaks */
+          table { page-break-inside: avoid !important; }
+          tr { page-break-inside: avoid !important; }
         }
       `}</style>
     </>
