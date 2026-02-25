@@ -155,7 +155,7 @@ export default function InvoicePrintPage() {
 
       {/* Invoice Document - Single A4 Page */}
       <div className="min-h-screen bg-gray-50 print:bg-white py-4 print:py-0 px-4 print:px-0">
-        <div className="max-w-4xl mx-auto bg-white shadow-lg print:shadow-none p-6 print:p-6" style={{ minHeight: 'auto' }}>
+        <div className="invoice-print-container max-w-4xl mx-auto bg-white shadow-lg print:shadow-none p-6 print:p-6 print:m-0" style={{ minHeight: 'auto' }}>
           {/* Professional Header */}
           <div className="border-b-4 border-blue-600 pb-3 mb-3">
             <div className="grid grid-cols-3 gap-4 items-start mb-2">
@@ -176,8 +176,8 @@ export default function InvoicePrintPage() {
               </div>
               {/* Right: Tax & Contact Info */}
               <div className="text-right text-xs space-y-0.5">
-                <p><span className="font-semibold">PIN:</span> 0726788925</p>
-                <p><span className="font-semibold">Ref:</span> 0111478454</p>
+                <p><span className="font-semibold">KRA PIN:</span> P000000000A</p>
+                <p className="text-gray-600 font-medium">Phone: 0726788925 / 0111478454</p>
                 <p className="text-gray-600 font-medium">Eastern Bypass, Nairobi</p>
               </div>
             </div>
@@ -301,9 +301,50 @@ export default function InvoicePrintPage() {
 
       <style jsx global>{`
         @media print {
-          body { margin: 0; padding: 0; background: white; }
-          @page { size: A4; margin: 1cm; }
-          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          * { margin: 0; padding: 0; }
+          html, body { 
+            margin: 0; 
+            padding: 0!important; 
+            width: 100%; 
+            height: 100%;
+            background: white !important;
+          }
+          @page { 
+            size: A4;
+            margin: 0;
+          }
+          
+          /* Hide print button and outer containers when printing */
+          div[class*="print:hidden"] { display: none !important; }
+          
+          /* Show only invoice container */
+          .invoice-print-container {
+            display: block !important;
+            margin: 0 !important;
+            padding: 1cm !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            page-break-inside: avoid !important;
+            page-break-after: avoid !important;
+            page-break-before: avoid !important;
+            overflow: hidden !important;
+            background: white !important;
+          }
+          
+          /* Ensure no overflow */
+          body > * { display: none !important; }
+          .invoice-print-container { display: block !important; }
+          
+          /* Prevent page breaks inside invoice */
+          table, tr, td, th, div, p, span { page-break-inside: avoid !important; }
+          
+          /* Force proper colors */
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+          
+          /* Ensure single page */
+          body { height: 297mm; overflow: hidden; }
         }
       `}</style>
     </>
