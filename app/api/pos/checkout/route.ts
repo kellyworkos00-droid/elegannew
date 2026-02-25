@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine payment status
-    const paymentAmount = amountPaid || order.totalAmount;
+    // Process payment amount but always start invoice as unpaid (SENT)
+    const paymentAmount = amountPaid || 0;  // Default to 0 if no payment made at checkout
     let paymentStatus = 'PENDING';
     if (paymentAmount >= order.totalAmount) {
       paymentStatus = 'PAID';
@@ -132,14 +132,7 @@ export async function POST(request: NextRequest) {
         const invoiceNumber = await getNextInvoiceNumber(tx);
       const issueDate = new Date();
 
-      // Calculate initial status based on payment
-      let initialStatus = 'SENT';
-      if (paymentAmount >= order.totalAmount) {
-        initialStatus = 'PAID';
-      } else if (paymentAmount > 0) {
-        initialStatus = 'PARTIALLY_PAID';
-      }
-
+      // All invoices start as SENT (unpaid) - status only changes when payments are recorded
       const invoice = await tx.invoice.create({
         data: {
           invoiceNumber,
@@ -149,7 +142,7 @@ export async function POST(request: NextRequest) {
           totalAmount: order.totalAmount,
           paidAmount: paymentAmount,
           balanceAmount: Math.max(order.totalAmount - paymentAmount, 0),
-          status: initialStatus,
+          status: 'SENT',
           issueDate,
           dueDate: issueDate,
           description: `POS sale for order ${order.orderNumber}`,
