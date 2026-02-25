@@ -95,7 +95,7 @@ model ProjectMilestone {
   projectId   String
   title       String
   description String?
-  dueDate     DateTime
+  dueDate     DateTime?
   status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, CANCELLED
   priority    String   @default("MEDIUM")  // LOW, MEDIUM, HIGH, CRITICAL
   createdAt   DateTime @default(now())
