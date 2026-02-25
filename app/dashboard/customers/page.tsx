@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { 
   Search, 
   Plus, 
@@ -34,7 +35,7 @@ interface Customer {
   creditLimit?: number | null;
   currentBalance: number;
   totalPaid: number;
-  invoices?: Array<{ id: string }>;
+  invoices?: Array<{ id: string; status: string; issueDate: string; dueDate: string }>;
 }
 
 export default function CustomersPage() {
@@ -229,6 +230,26 @@ export default function CustomersPage() {
     ];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
+  };
+
+  const calculatePaymentScore = (customer: Customer): { score: number; status: string; color: string } => {
+    if (!customer.invoices || customer.invoices.length === 0) {
+      return { score: 100, status: 'No History', color: 'text-gray-500' };
+    }
+
+    const paidInvoices = customer.invoices.filter(inv => inv.status === 'PAID').length;
+    const totalInvoices = customer.invoices.length;
+    const score = totalInvoices > 0 ? Math.round((paidInvoices / totalInvoices) * 100) : 100;
+
+    if (score >= 80) {
+      return { score, status: 'Excellent', color: 'text-green-600 bg-green-50 border-green-200' };
+    } else if (score >= 60) {
+      return { score, status: 'Good', color: 'text-blue-600 bg-blue-50 border-blue-200' };
+    } else if (score >= 40) {
+      return { score, status: 'Fair', color: 'text-yellow-600 bg-yellow-50 border-yellow-200' };
+    } else {
+      return { score, status: 'Poor', color: 'text-red-600 bg-red-50 border-red-200' };
+    }
   };
 
   return (
@@ -557,6 +578,9 @@ export default function CustomersPage() {
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Total Paid
                   </th>
+                  <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Payment Health
+                  </th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Credit Limit
                   </th>
@@ -566,102 +590,117 @@ export default function CustomersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredCustomers.map((customer, index) => (
-                  <tr 
-                    key={customer.id} 
-                    className={`
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                      hover:bg-blue-50/30 transition-colors
-                    `}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full ${getAvatarColor(customer.name)} flex items-center justify-center text-white font-semibold text-sm`}>
-                          {getInitials(customer.name)}
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-900">{customer.name}</div>
-                          <div className="text-sm text-gray-500 flex items-center gap-1">
-                            <FileText className="w-3 h-3" />
-                            {customer.customerCode}
+                {filteredCustomers.map((customer, index) => {
+                  const paymentScore = calculatePaymentScore(customer);
+                  return (
+                    <tr 
+                      key={customer.id} 
+                      className={`
+                        ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                        hover:bg-blue-50/30 transition-colors
+                      `}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full ${getAvatarColor(customer.name)} flex items-center justify-center text-white font-semibold text-sm`}>
+                            {getInitials(customer.name)}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900">{customer.name}</div>
+                            <div className="text-sm text-gray-500 flex items-center gap-1">
+                              <FileText className="w-3 h-3" />
+                              {customer.customerCode}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1">
-                        {customer.email && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Mail className="w-4 h-4 text-gray-400" />
-                            <a href={`mailto:${customer.email}`} className="hover:text-blue-600">
-                              {customer.email}
-                            </a>
-                          </div>
-                        )}
-                        {customer.phone && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Phone className="w-4 h-4 text-gray-400" />
-                            <a href={`tel:${customer.phone}`} className="hover:text-blue-600">
-                              {customer.phone}
-                            </a>
-                          </div>
-                        )}
-                        {!customer.email && !customer.phone && (
-                          <div className="text-sm text-gray-400 italic">No contact info</div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="inline-flex items-center gap-1">
-                        {customer.currentBalance > 0 ? (
-                          <>
-                            <AlertCircle className="w-4 h-4 text-orange-500" />
-                            <span className="font-semibold text-orange-600">
-                              KES {customer.currentBalance.toLocaleString()}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-gray-500">KES 0</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="font-medium text-gray-900">
-                        KES {customer.totalPaid.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="text-gray-600">
-                        KES {(customer.creditLimit || 0).toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleEdit(customer)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit customer"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => toast.success('View details coming soon!')}
-                          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                          title="View details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(customer)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete customer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="space-y-1">
+                          {customer.email && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Mail className="w-4 h-4 text-gray-400" />
+                              <a href={`mailto:${customer.email}`} className="hover:text-blue-600">
+                                {customer.email}
+                              </a>
+                            </div>
+                          )}
+                          {customer.phone && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Phone className="w-4 h-4 text-gray-400" />
+                              <a href={`tel:${customer.phone}`} className="hover:text-blue-600">
+                                {customer.phone}
+                              </a>
+                            </div>
+                          )}
+                          {!customer.email && !customer.phone && (
+                            <div className="text-sm text-gray-400 italic">No contact info</div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="inline-flex items-center gap-1">
+                          {customer.currentBalance > 0 ? (
+                            <>
+                              <AlertCircle className="w-4 h-4 text-orange-500" />
+                              <span className="font-semibold text-orange-600">
+                                KES {customer.currentBalance.toLocaleString()}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-gray-500">KES 0</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="font-medium text-gray-900">
+                          KES {customer.totalPaid.toLocaleString()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-medium ${paymentScore.color}`}>
+                          <div className="w-2 h-2 rounded-full" style={{
+                            backgroundColor: paymentScore.status === 'Excellent' ? '#22c55e' :
+                                            paymentScore.status === 'Good' ? '#3b82f6' :
+                                            paymentScore.status === 'Fair' ? '#eab308' :
+                                            '#ef4444'
+                          }} />
+                          <span>{paymentScore.status}</span>
+                          <span>({paymentScore.score}%)</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="text-gray-600">
+                          KES {(customer.creditLimit || 0).toLocaleString()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <Link
+                            href={`/dashboard/customers/${customer.id}`}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="View details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={() => handleEdit(customer)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit customer"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(customer)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete customer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -2,7 +2,16 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, FileText, AlertCircle, Trash2 } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  FileText, 
+  AlertCircle, 
+  Trash2,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+} from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
@@ -29,6 +38,17 @@ interface Invoice {
   totalPaid?: number;
 }
 
+interface CustomerPerformance {
+  totalInvoices: number;
+  paidInvoices: number;
+  onTimePayments: number;
+  latePayments: number;
+  averageDaysToPay: number;
+  paymentReliabilityScore: number;
+  lastPaymentDate: string | null;
+  nextDueDate: string | null;
+}
+
 export default function CustomerDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -37,6 +57,7 @@ export default function CustomerDetailPage() {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [currentInvoices, setCurrentInvoices] = useState<Invoice[]>([]);
+  const [performance, setPerformance] = useState<CustomerPerformance | null>(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -55,8 +76,62 @@ export default function CustomerDetailPage() {
 
       const data = await response.json();
       setCustomer(data.data.customer);
-      setInvoices(data.data.invoices || []);
+      const customerInvoices = data.data.invoices || [];
+      setInvoices(customerInvoices);
       setCurrentInvoices(data.data.currentInvoices || []);
+
+      // Calculate performance metrics
+      if (customerInvoices.length > 0) {
+        const totalInvoices = customerInvoices.length;
+        const paidInvoices = customerInvoices.filter((inv: Invoice) => inv.status === 'PAID').length;
+        
+        // Calculate on-time vs late payments
+        let onTimePayments = 0;
+        let latePayments = 0;
+        let totalDaysToPay = 0;
+        let paymentCount = 0;
+        let lastPaymentDate: string | null = null;
+
+        customerInvoices.forEach((invoice: Invoice) => {
+          if (invoice.status === 'PAID') {
+            const issueDate = new Date(invoice.issueDate);
+            const dueDate = new Date(invoice.dueDate);
+            // Assuming paid on due date or before (since we don't have actual payment date)
+            onTimePayments++;
+            const daysDiff = Math.floor((dueDate.getTime() - issueDate.getTime()) / (1000 * 60 * 60 * 24));
+            totalDaysToPay += daysDiff;
+            paymentCount++;
+            lastPaymentDate = invoice.issueDate; // Using issue date as approximate
+          } else if (invoice.status === 'OVERDUE') {
+            latePayments++;
+          }
+        });
+
+        const averageDaysToPay = paymentCount > 0 ? Math.round(totalDaysToPay / paymentCount) : 0;
+        const reliabilityScore = totalInvoices > 0 
+          ? Math.round((paidInvoices / totalInvoices) * 100) 
+          : 0;
+
+        // Get next due date from current invoices
+        let nextDueDate: string | null = null;
+        if (data.data.currentInvoices && data.data.currentInvoices.length > 0) {
+          const sortedByDue = [...data.data.currentInvoices].sort((a: Invoice, b: Invoice) => 
+            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+          );
+          nextDueDate = sortedByDue[0].dueDate;
+        }
+
+        setPerformance({
+          totalInvoices,
+          paidInvoices,
+          onTimePayments,
+          latePayments,
+          averageDaysToPay,
+          paymentReliabilityScore: reliabilityScore,
+          lastPaymentDate,
+          nextDueDate,
+        });
+      }
     } catch (error) {
       console.error('Error fetching customer:', error);
       toast.error('Failed to load customer details');
@@ -214,6 +289,77 @@ export default function CustomerDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Performance Metrics */}
+            {performance && (
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 border border-purple-200">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-purple-600" />
+                  Payment Performance
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Reliability Score</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full ${
+                            performance.paymentReliabilityScore >= 80 ? 'bg-green-500' :
+                            performance.paymentReliabilityScore >= 60 ? 'bg-yellow-500' :
+                            'bg-red-500'
+                          }`}
+                          style={{ width: `${performance.paymentReliabilityScore}%` }}
+                        />
+                      </div>
+                      <span className="font-bold text-gray-900 w-12 text-right">
+                        {performance.paymentReliabilityScore}%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-purple-200">
+                    <div>
+                      <div className="text-xs text-gray-600 mb-1">Total Invoices</div>
+                      <div className="text-lg font-bold text-gray-900">{performance.totalInvoices}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-600 mb-1">Paid</div>
+                      <div className="text-lg font-bold text-green-600">{performance.paidInvoices}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        On-time
+                      </div>
+                      <div className="text-lg font-bold text-green-600">{performance.onTimePayments}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        Late
+                      </div>
+                      <div className="text-lg font-bold text-orange-600">{performance.latePayments}</div>
+                    </div>
+                    <div className="col-span-2">
+                      <div className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        Avg Days to Pay
+                      </div>
+                      <div className="text-lg font-bold text-gray-900">{performance.averageDaysToPay} days</div>
+                    </div>
+                  </div>
+
+                  {performance.nextDueDate && (
+                    <div className="pt-3 border-t border-purple-200">
+                      <div className="text-xs text-gray-600 mb-1">Next Due Date</div>
+                      <div className="text-sm font-semibold text-purple-700">
+                        {formatDate(performance.nextDueDate)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Status Badge */}
             <div>
