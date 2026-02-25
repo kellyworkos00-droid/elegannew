@@ -166,6 +166,27 @@ export async function POST(request: NextRequest) {
         })
         : null;
 
+      // Update invoice with paid amount if payment was made at checkout
+      if (payment) {
+        const newPaidAmount = paymentAmount;
+        const newBalanceAmount = Math.max(order.totalAmount - paymentAmount, 0);
+        let newInvoiceStatus = 'SENT';
+        if (newPaidAmount >= order.totalAmount) {
+          newInvoiceStatus = 'PAID';
+        } else if (newPaidAmount > 0) {
+          newInvoiceStatus = 'PARTIALLY_PAID';
+        }
+
+        await tx.invoice.update({
+          where: { id: invoice.id },
+          data: {
+            paidAmount: newPaidAmount,
+            balanceAmount: newBalanceAmount,
+            status: newInvoiceStatus,
+          },
+        });
+      }
+
       const updatedTotalOutstanding = new Decimal(customer.totalOutstanding)
         .plus(order.totalAmount);
       const updatedTotalPaid = new Decimal(customer.totalPaid)
