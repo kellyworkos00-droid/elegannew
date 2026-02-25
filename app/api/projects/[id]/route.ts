@@ -17,9 +17,6 @@ const updateProjectSchema = z.object({
   actualExpenses: z.number().min(0).optional(),
   status: z.enum(['PLANNING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'ON_HOLD']).optional(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
-  completedDate: z.string().datetime().optional(),
   progress: z.number().min(0).max(100).optional(),
   projectManager: z.string().optional(),
   teamMembers: z.string().optional(),
@@ -122,11 +119,6 @@ export async function PUT(
     }
 
     const updateData: Prisma.ProjectUpdateInput = { ...parsed.data };
-    
-    // Convert date strings to Date objects
-    if (updateData.startDate) updateData.startDate = new Date(updateData.startDate);
-    if (updateData.endDate) updateData.endDate = new Date(updateData.endDate);
-    if (updateData.completedDate) updateData.completedDate = new Date(updateData.completedDate);
 
     const project = await prisma.project.update({
       where: { id: params.id },
