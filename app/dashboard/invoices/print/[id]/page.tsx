@@ -86,6 +86,15 @@ export default function InvoicePrintPage() {
     }
   }, [params.id]);
 
+  useEffect(() => {
+    // Auto-print when page loads
+    if (invoice && !loading) {
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+  }, [invoice, loading]);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
@@ -100,10 +109,6 @@ export default function InvoicePrintPage() {
       month: 'long',
       day: 'numeric',
     });
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   if (loading) {
@@ -139,60 +144,124 @@ export default function InvoicePrintPage() {
   );
 
   return (
-    <>
-      {/* Print button - hidden when printing */}
-      <div className="print:hidden fixed top-4 right-4 z-50">
-        <button
-          onClick={handlePrint}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 shadow-lg hover:bg-blue-700"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
-          </svg>
-          Print Invoice
-        </button>
-      </div>
+    <div style={{ margin: 0, padding: 0, width: '100%', backgroundColor: '#ffffff' }}>
+      <style>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        html, body {
+          margin: 0;
+          padding: 0;
+          background: white;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+          color: #111827;
+        }
+        
+        @media print {
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          
+          html, body {
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
+          
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          
+          body {
+            width: 210mm;
+            height: 297mm;
+          }
+          
+          .invoice-page {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0.5cm;
+            background: white;
+            page-break-inside: avoid;
+          }
+        }
+        
+        @media screen {
+          .invoice-page {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 40px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+        }
+      `}</style>
 
-      {/* Invoice Document - Single A4 Page */}
-      <div className="min-h-screen bg-gray-50 print:bg-white py-4 print:py-0 px-4 print:px-0">
-        <div className="invoice-print-container max-w-4xl mx-auto bg-white shadow-lg print:shadow-none p-6 print:p-8 print:m-0" style={{ minHeight: 'auto' }}>
+      {loading ? (
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+          <div style={{ animation: 'spin 1s linear infinite', width: '40px', height: '40px', border: '4px solid #e5e7eb', borderTop: '4px solid #2563eb', borderRadius: '50%', margin: '0 auto', marginBottom: '20px' }} />
+          <p>Loading invoice...</p>
+        </div>
+      ) : !invoice ? (
+        <div style={{ padding: '40px', textAlign: 'center', color: '#dc2626' }}>
+          <p>Invoice not found</p>
+        </div>
+      ) : (
+        <div className="invoice-page">
           {/* Professional Header */}
-          <div className="border-b-4 border-blue-600 pb-4 mb-4">
-            <div className="grid grid-cols-3 gap-4 items-start mb-3">
+          <div style={{ borderBottom: '4px solid #2563eb', paddingBottom: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'flex-start', marginBottom: '12px' }}>
               {/* Left: Company Logo & Name */}
-              <div className="flex items-center gap-3">
-                <div className="relative w-12 h-12 flex-shrink-0">
-                  <Image src="/images/elegant-logo.jpg" alt="Elegant Steel Logo" fill className="object-contain" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ position: 'relative', width: '48px', height: '48px', flexShrink: 0 }}>
+                  <Image src="/images/elegant-logo.jpg" alt="Elegant Steel Logo" fill style={{ objectFit: 'contain' }} />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-blue-900">ELEGANT STEEL</h1>
-                  <p className="text-xs text-gray-600">EASTERN BYPASS</p>
+                  <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1e3a8a', margin: 0 }}>ELEGANT STEEL</h1>
+                  <p style={{ fontSize: '12px', color: '#4b5563', margin: '2px 0 0 0' }}>EASTERN BYPASS</p>
                 </div>
               </div>
               {/* Center: INVOICE Title */}
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900">INVOICE</h2>
-                <p className="text-sm font-semibold text-blue-600 mt-1">{invoice.invoiceNumber}</p>
+              <div style={{ textAlign: 'center' }}>
+                <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', margin: 0 }}>INVOICE</h2>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#2563eb', marginTop: '4px' }}>{invoice.invoiceNumber}</p>
               </div>
               {/* Right: Tax & Contact Info */}
-              <div className="text-right text-xs space-y-1">
-                <p className="font-semibold">KRA PIN: <span className="text-blue-600">P000000000A</span></p>
-                <p className="text-gray-700">📞 0726788925 / 0111478454</p>
-                <p className="text-gray-700">📍 Eastern Bypass, Nairobi</p>
+              <div style={{ textAlign: 'right', fontSize: '12px', lineHeight: 1.6 }}>
+                <p style={{ margin: '0 0 4px 0' }}><span style={{ fontWeight: 'bold' }}>KRA PIN:</span> <span style={{ color: '#2563eb' }}>P000000000A</span></p>
+                <p style={{ margin: '0 0 4px 0', color: '#374151' }}>📞 0726788925 / 0111478454</p>
+                <p style={{ margin: 0, color: '#374151' }}>📍 Eastern Bypass, Nairobi</p>
               </div>
             </div>
             {/* Dates */}
-            <div className="grid grid-cols-3 gap-4 text-sm pt-3 border-t border-gray-200">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', fontSize: '14px', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
               <div>
-                <p className="text-gray-600 font-semibold text-xs uppercase">Issued</p>
-                <p className="font-bold text-gray-900">{formatDate(invoice.issueDate)}</p>
+                <p style={{ color: '#4b5563', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase', margin: '0 0 4px 0' }}>Issued</p>
+                <p style={{ fontWeight: 'bold', color: '#111827', margin: 0 }}>{formatDate(invoice.issueDate)}</p>
               </div>
-              <div className="text-center">
-                <p className="text-gray-600 font-semibold text-xs uppercase">Due</p>
-                <p className="font-bold text-gray-900">{formatDate(invoice.dueDate)}</p>
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ color: '#4b5563', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase', margin: '0 0 4px 0' }}>Due</p>
+                <p style={{ fontWeight: 'bold', color: '#111827', margin: 0 }}>{formatDate(invoice.dueDate)}</p>
               </div>
-              <div className="text-right">
-                <p className={`text-xs font-bold uppercase px-3 py-1 rounded inline-block ${invoice.status === 'PAID' ? 'bg-green-100 text-green-700' : invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-700' : invoice.status === 'PARTIALLY_PAID' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  padding: '4px 12px',
+                  borderRadius: '4px',
+                  display: 'inline-block',
+                  backgroundColor: invoice.status === 'PAID' ? '#dcfce7' : invoice.status === 'OVERDUE' ? '#fee2e2' : invoice.status === 'PARTIALLY_PAID' ? '#fef3c7' : '#dbeafe',
+                  color: invoice.status === 'PAID' ? '#166534' : invoice.status === 'OVERDUE' ? '#991b1b' : invoice.status === 'PARTIALLY_PAID' ? '#b45309' : '#1e40af',
+                  margin: 0
+                }}>
                   {invoice.status.replace(/_/g, ' ')}
                 </p>
               </div>
@@ -200,46 +269,46 @@ export default function InvoicePrintPage() {
           </div>
 
           {/* Customer & Items Section */}
-          <div className="grid grid-cols-3 gap-3 mb-4 text-sm">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px', fontSize: '14px' }}>
             {/* Bill To */}
             <div>
-              <p className="font-bold text-gray-900 uppercase text-xs mb-2">Bill To</p>
-              <p className="font-semibold text-gray-900">{invoice.customer.name}</p>
-              {invoice.customer.billingAddress && <p className="text-gray-600 text-xs">{invoice.customer.billingAddress}</p>}
-              {invoice.customer.phone && <p className="text-gray-600 text-xs">Tel: {invoice.customer.phone}</p>}
+              <p style={{ fontWeight: 'bold', color: '#111827', textTransform: 'uppercase', fontSize: '12px', marginBottom: '8px', margin: 0 }}>Bill To</p>
+              <p style={{ fontWeight: '600', color: '#111827', margin: 0 }}>{invoice.customer.name}</p>
+              {invoice.customer.billingAddress && <p style={{ color: '#4b5563', fontSize: '12px', margin: '2px 0' }}>{invoice.customer.billingAddress}</p>}
+              {invoice.customer.phone && <p style={{ color: '#4b5563', fontSize: '12px', margin: 0 }}>Tel: {invoice.customer.phone}</p>}
             </div>
             {/* Items Count */}
-            <div className="bg-blue-50 p-3 rounded text-center border-2 border-blue-200">
-              <p className="font-bold text-gray-900 text-lg">{lineItems.length}</p>
-              <p className="text-gray-600 text-xs font-semibold">Line Items</p>
+            <div style={{ backgroundColor: '#eff6ff', padding: '12px', borderRadius: '4px', textAlign: 'center', border: '2px solid #bfdbfe' }}>
+              <p style={{ fontWeight: 'bold', color: '#111827', fontSize: '18px', margin: 0 }}>{lineItems.length}</p>
+              <p style={{ color: '#4b5563', fontSize: '12px', fontWeight: '600', margin: '2px 0 0 0' }}>Line Items</p>
             </div>
             {/* Tax Info */}
-            <div className="bg-amber-50 p-3 rounded text-right border-2 border-amber-200">
-              <p className="text-xs text-gray-600 font-semibold">VAT Rate</p>
-              <p className="font-bold text-amber-700 text-lg">16%</p>
-              <p className="text-xs text-gray-600">Included in Total</p>
+            <div style={{ backgroundColor: '#fffbeb', padding: '12px', borderRadius: '4px', textAlign: 'right', border: '2px solid #fde68a' }}>
+              <p style={{ fontSize: '12px', color: '#4b5563', fontWeight: '600', margin: '0 0 4px 0' }}>VAT Rate</p>
+              <p style={{ fontWeight: 'bold', color: '#b45309', fontSize: '18px', margin: 0 }}>16%</p>
+              <p style={{ fontSize: '12px', color: '#4b5563', margin: '2px 0 0 0' }}>Included in Total</p>
             </div>
           </div>
 
           {/* Line Items Table */}
           {lineItems.length > 0 && (
-            <div className="mb-4">
-              <table className="w-full text-sm border-collapse">
+            <div style={{ marginBottom: '16px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                 <thead>
-                  <tr className="bg-blue-100 border-b-2 border-blue-600">
-                    <th className="text-left py-2 px-3 font-bold text-gray-900">Description</th>
-                    <th className="text-center py-2 px-2 font-bold text-gray-900 w-16">Qty</th>
-                    <th className="text-right py-2 px-3 font-bold text-gray-900 w-24">Unit Price</th>
-                    <th className="text-right py-2 px-3 font-bold text-gray-900 w-24">Total</th>
+                  <tr style={{ backgroundColor: '#dbeafe', borderBottom: '2px solid #2563eb' }}>
+                    <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 'bold', color: '#111827' }}>Description</th>
+                    <th style={{ textAlign: 'center', padding: '8px 8px', fontWeight: 'bold', color: '#111827', width: '60px' }}>Qty</th>
+                    <th style={{ textAlign: 'right', padding: '8px 12px', fontWeight: 'bold', color: '#111827', width: '100px' }}>Unit Price</th>
+                    <th style={{ textAlign: 'right', padding: '8px 12px', fontWeight: 'bold', color: '#111827', width: '100px' }}>Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {lineItems.map((item, index) => (
-                    <tr key={index} className="border-b border-gray-200">
-                      <td className="py-2 px-3 text-gray-900">{item.description}</td>
-                      <td className="py-2 px-2 text-center text-gray-900 font-medium">{item.quantity}</td>
-                      <td className="py-2 px-3 text-right text-gray-900">{formatCurrency(item.unitPrice)}</td>
-                      <td className="py-2 px-3 text-right text-gray-900 font-semibold">{formatCurrency(item.total)}</td>
+                    <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '8px 12px', color: '#111827' }}>{item.description}</td>
+                      <td style={{ padding: '8px 8px', textAlign: 'center', color: '#111827', fontWeight: '500' }}>{item.quantity}</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: '#111827' }}>{formatCurrency(item.unitPrice)}</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: '#111827', fontWeight: '600' }}>{formatCurrency(item.total)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -248,29 +317,29 @@ export default function InvoicePrintPage() {
           )}
 
           {/* Totals Section */}
-          <div className="border-t-2 border-gray-300 pt-3">
-            <div className="flex justify-end">
-              <div className="w-72">
-                <div className="flex justify-between text-sm py-1.5">
-                  <span className="text-gray-700 font-semibold">Subtotal:</span>
-                  <span className="font-semibold text-gray-900">{formatCurrency(invoice.subtotal)}</span>
+          <div style={{ borderTop: '2px solid #d1d5db', paddingTop: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ width: '300px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', paddingBottom: '6px' }}>
+                  <span style={{ color: '#374151', fontWeight: '600' }}>Subtotal:</span>
+                  <span style={{ fontWeight: '600', color: '#111827' }}>{formatCurrency(invoice.subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-sm py-1.5 border-b-2 border-gray-300">
-                  <span className="text-gray-700 font-semibold">VAT @ 16%:</span>
-                  <span className="font-semibold text-amber-700">{formatCurrency(invoice.taxAmount)}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', paddingBottom: '6px', borderBottom: '2px solid #d1d5db' }}>
+                  <span style={{ color: '#374151', fontWeight: '600' }}>VAT @ 16%:</span>
+                  <span style={{ fontWeight: '600', color: '#b45309' }}>{formatCurrency(invoice.taxAmount)}</span>
                 </div>
-                <div className="flex justify-between text-lg py-2 font-bold bg-gradient-to-r from-blue-50 to-blue-100 px-3 rounded my-2">
-                  <span className="text-gray-900">TOTAL DUE:</span>
-                  <span className="text-blue-900">{formatCurrency(invoice.totalAmount)}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 'bold', backgroundColor: '#eff6ff', padding: '8px 12px', borderRadius: '4px', margin: '8px 0' }}>
+                  <span style={{ color: '#111827' }}>TOTAL DUE:</span>
+                  <span style={{ color: '#1e3a8a' }}>{formatCurrency(invoice.totalAmount)}</span>
                 </div>
                 {invoice.paidAmount > 0 && (
                   <>
-                    <div className="flex justify-between text-sm py-1.5 text-green-700 font-semibold">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', paddingTop: '6px', color: '#15803d', fontWeight: '600' }}>
                       <span>Amount Paid:</span>
                       <span>{formatCurrency(invoice.paidAmount)}</span>
                     </div>
                     {invoice.balanceAmount > 0 && (
-                      <div className="flex justify-between text-sm py-1.5 bg-orange-50 px-3 rounded text-orange-800 font-bold">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', paddingTop: '6px', backgroundColor: '#fffbeb', padding: '8px 12px', borderRadius: '4px', color: '#92400e', fontWeight: 'bold' }}>
                         <span>Balance Due:</span>
                         <span>{formatCurrency(invoice.balanceAmount)}</span>
                       </div>
@@ -283,13 +352,13 @@ export default function InvoicePrintPage() {
 
           {/* Payment History */}
           {invoice.payments.length > 0 && (
-            <div className="mt-4 text-xs">
-              <p className="font-bold text-gray-900 uppercase mb-2 border-b-2 border-gray-300 pb-1">Payment History</p>
-              <div className="space-y-1">
+            <div style={{ marginTop: '16px', fontSize: '12px' }}>
+              <p style={{ fontWeight: 'bold', color: '#111827', textTransform: 'uppercase', marginBottom: '8px', paddingBottom: '4px', borderBottom: '2px solid #d1d5db', margin: 0 }}>Payment History</p>
+              <div style={{ marginTop: '8px' }}>
                 {invoice.payments.map((payment) => (
-                  <div key={payment.id} className="flex justify-between bg-gray-50 p-2 px-3 rounded border-l-4 border-green-500">
-                    <span className="text-gray-700 font-medium">{formatDate(payment.paymentDate)} - {payment.paymentMethod}</span>
-                    <span className="font-bold text-green-700">{formatCurrency(payment.amount)}</span>
+                  <div key={payment.id} style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: '#f3f4f6', padding: '6px 12px', borderRadius: '4px', marginBottom: '4px', borderLeft: '4px solid #22c55e' }}>
+                    <span style={{ color: '#374151', fontWeight: '500' }}>{formatDate(payment.paymentDate)} - {payment.paymentMethod}</span>
+                    <span style={{ fontWeight: 'bold', color: '#15803d' }}>{formatCurrency(payment.amount)}</span>
                   </div>
                 ))}
               </div>
@@ -297,68 +366,14 @@ export default function InvoicePrintPage() {
           )}
 
           {/* Footer */}
-          <div className="border-t-2 border-gray-300 pt-3 mt-4 text-center text-xs text-gray-600">
-            <p className="font-bold text-gray-900 mb-1 text-sm">Thank you for your business!</p>
-            <p className="text-gray-600 leading-relaxed">VAT is included in all prices above. This is a computer-generated document and requires no signature for validity.</p>
-            <p className="text-gray-500 mt-2 font-semibold">Elegant Steel | Eastern Bypass | KRA PIN: P000000000A</p>
-            <p className="text-gray-400 mt-1 text-xs">Printed on {formatDate(new Date().toISOString())}</p>
+          <div style={{ borderTop: '2px solid #d1d5db', paddingTop: '12px', marginTop: '16px', textAlign: 'center', fontSize: '12px', color: '#4b5563' }}>
+            <p style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px', fontSize: '14px', margin: 0 }}>Thank you for your business!</p>
+            <p style={{ color: '#6b7280', lineHeight: 1.5, margin: '4px 0' }}>VAT is included in all prices above. This is a computer-generated document and requires no signature for validity.</p>
+            <p style={{ color: '#6b7280', marginTop: '8px', fontWeight: '600', margin: '8px 0 0 0' }}>Elegant Steel | Eastern Bypass | KRA PIN: P000000000A</p>
+            <p style={{ color: '#9ca3af', marginTop: '4px', fontSize: '11px', margin: '4px 0 0 0' }}>Printed on {formatDate(new Date().toISOString())}</p>
           </div>
         </div>
-      </div>
-
-      <style jsx global>{`
-        @media print {
-          * { 
-            margin: 0; 
-            padding: 0;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-          }
-          
-          html, body { 
-            margin: 0; 
-            padding: 0 !important; 
-            width: 100%; 
-            background: white !important;
-          }
-          
-          @page { 
-            size: A4;
-            margin: 0;
-          }
-          
-          /* Hide print button when printing */
-          div:has(> button) { display: none !important; }
-          button { display: none !important; }
-          
-          /* Show invoice container */
-          .invoice-print-container {
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            page-break-inside: avoid !important;
-            page-break-after: avoid !important;
-            background: white !important;
-            margin: 0 !important;
-            padding: 0.5cm !important;
-            max-width: none !important;
-          }
-          
-          /* Ensure text and colors are visible */
-          p, span, div, td, th { 
-            color: inherit !important;
-          }
-          
-          /* Keep backgrounds and colors */
-          div[class*="bg-"] {
-            background: inherit !important;
-          }
-          
-          /* Prevent unnecessary page breaks */
-          table { page-break-inside: avoid !important; }
-          tr { page-break-inside: avoid !important; }
-        }
-      `}</style>
-    </>
+      )}
+    </div>
   );
 }
